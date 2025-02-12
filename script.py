@@ -1,80 +1,62 @@
+######### cohere ##########
+
 import streamlit as st
-import random
-import time
+import cohere
+
+# # Initialize Cohere client
+co = cohere.Client("S3Yx8oisKkISF6dedBARuj722eqeWtVQRJT0REdE")
 
 
-# # Streamed response emulator
-# def response_generator():
-#     response = random.choice(
-#         [
-#             "Hello there! How can I assist you today?",
-#             "Hi, human! Is there anything I can help you with?",
-#             "Do you need help?",
-#         ]
-#     )
-#     for word in response.split():
-#         yield word + " "
-#         time.sleep(0.05)
+# Streamlit interface
+st.title("Project Genie Chatbot")
+st.write("Enter your interests to get project ideas.")
+
+user_input = st.text_input("Enter your interests:")
+
+if user_input:
+    prompt = f"Suggest a unique project idea based on the following interests: {user_input}"
+    
+    response = co.generate(
+        model="command-r-08-2024",
+        prompt=prompt,
+        max_tokens=500
+    )
+    
+    st.write("Generated Project Idea:")
+    st.write(response.generations[0].text)
+    
+    
 
 
-st.title("Simple chat")
-
-# Initialize chat history
-if "messages" not in st.session_state:
-    st.session_state.messages = []
-
-# Display chat messages from history on app rerun
-for message in st.session_state.messages:
-    with st.chat_message(message["role"]):
-        st.markdown(message["content"])
-
-# Accept user input
-if prompt := st.chat_input("What is up?"):
-    # Add user message to chat history
-    st.session_state.messages.append({"role": "user", "content": prompt})
-    # Display user message in chat message container
-    with st.chat_message("user"):
-        st.markdown(prompt)
-
-    # Display assistant response in chat message container
-    with st.chat_message("assistant"):
-        response = st.write_stream(response_generator())
-    # Add assistant response to chat history
-    st.session_state.messages.append({"role": "assistant", "content": response})
-  
-
-# from openai import OpenAI
 # import streamlit as st
+# from llama_cpp import Llama
 
-# st.title("ChatGPT-like clone")
+# # Initialize Llama model
+# llama_model = Llama(model_path="/Users/vedpawar/llama_models/mistral-7b-instruct")  # Replace with your model path
 
-# client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
+# # Define Streamlit app interface
+# st.title("Llama 3.2 Chatbot")
+# st.write("Enter a prompt, and Llama 3.2 will generate a response:")
 
-# if "openai_model" not in st.session_state:
-#     st.session_state["openai_model"] = "gpt-3.5-turbo"
+# # Take user input
+# user_input = st.text_input("Enter your prompt:")
 
-# if "messages" not in st.session_state:
-#     st.session_state.messages = []
+# # Generate a response from Llama 3.2
+# if user_input:
+#     response = llama_model(user_input)  # Adjust based on the function used to query the model
+#     st.write("Llama's Response:")
+#     st.write(response)
 
-# for message in st.session_state.messages:
-#     with st.chat_message(message["role"]):
-#         st.markdown(message["content"])
 
-# if prompt := st.chat_input("What is up?"):
-#     st.session_state.messages.append({"role": "user", "content": prompt})
-#     with st.chat_message("user"):
-#         st.markdown(prompt)
 
-#     with st.chat_message("assistant"):
-#         stream = client.chat.completions.create(
-#             model=st.session_state["openai_model"],
-#             messages=[
-#                 {"role": m["role"], "content": m["content"]}
-#                 for m in st.session_state.messages
-#             ],
-#             stream=True,
-#         )
-#         response = st.write_stream(stream)
-#     st.session_state.messages.append({"role": "assistant", "content": response})  
-  
-  
+# from transformers import GPT2LMHeadModel, GPT2Tokenizer
+
+# model_name = "gpt2"
+# model = GPT2LMHeadModel.from_pretrained(model_name)
+# tokenizer = GPT2Tokenizer.from_pretrained(model_name)
+
+# input_text = "Once upon a time"
+# inputs = tokenizer.encode(input_text, return_tensors="pt")
+# outputs = model.generate(inputs, max_length=100, num_return_sequences=1)
+
+# print(tokenizer.decode(outputs[0], skip_special_tokens=True))
