@@ -3,8 +3,11 @@
 import streamlit as st
 import cohere
 
+
+api_key = st.secrets["api_keys"]["API_KEY"]
+
 # # Initialize Cohere client
-co = cohere.Client("S3Yx8oisKkISF6dedBARuj722eqeWtVQRJT0REdE")
+co = cohere.Client(api_key)
 
 
 # Streamlit interface
