@@ -4,6 +4,17 @@ import streamlit as st
 import cohere
 import fitz  # PyMuPDF
 import pdfplumber
+# try:
+#     import fitz  
+#     pymupdf_available = True
+# except ImportError:
+#     pymupdf_available = False
+    
+# try:
+#     import pdfplumber
+#     pdfplumber_available = True
+# except ImportError:
+#     pdfplumber_available = False
 
 st.set_page_config(layout="wide")  
 st.title("🚀 Project Genie & Resume Analyzer")

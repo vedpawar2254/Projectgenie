@@ -1,2 +1,4 @@
 cohere
 streamlit
+fitz
+pdfplumber
