@@ -74,7 +74,7 @@ with col2:
         st.header("🛠 Generated Project Ideas")
         st.write("🔍 **Processing for project recommendations...**")
         
-        prompt = f"Generate two unique project ideas based primarily on the user's learning goal: '{st.session_state.user_learning_input}'. If the learning goal is empty, consider the resume content: '{st.session_state.resume_text[:1000]}'. Each project should include:\n\n1️⃣ **Project Name & Brief Description**\n2️⃣ **Why this project?**\n3️⃣ **Step-by-Step Roadmap**\n4️⃣ **Relevant Official Documentation** (Only include links to official documentation, no other resources)"
+        prompt = f"Generate two unique mini project ideas (should be completed in few days) based primarily on the user's learning goal: '{st.session_state.user_learning_input}'. If the learning goal is empty, consider the resume content: '{st.session_state.resume_text[:1000]}'. Each project should include:\n\n1️⃣ **Project Name & Brief Description**\n2️⃣ **Why this project?**\n3️⃣ **Step-by-Step Roadmap**\n4️⃣ **Relevant Official Documentation** (Only include links to official documentation, no other resources)"
         
         try:
             response = co.generate(
