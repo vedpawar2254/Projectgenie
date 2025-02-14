@@ -5,6 +5,7 @@ import cohere
 import fitz  # PyMuPDF
 import pdfplumber
 import re
+
 # try:
 #     import fitz  
 #     pymupdf_available = True
@@ -95,8 +96,6 @@ with col1:
             st.session_state.button_clicked = True 
 
 with col2:
-    
-
     # Generate the AI prompt with parsed data
     prompt = f"""You are an AI project advisor helping students build relevant and achievable projects.
 
@@ -127,16 +126,17 @@ with col2:
 Only return structured project ideas. No extra explanations.
 """
         
-        try:
-            response = co.generate(
-                model="command-r-08-2024",
-                prompt=prompt,
-                max_tokens=700
-            )
-            st.subheader("Recommended Project Ideas:")
-            st.write(response.generations[0].text)
-        except Exception as e:
-            st.error(f"🚨 Error generating project ideas: {str(e)}")
+    
+    try:
+        response = co.generate(
+            model="command-r-08-2024",
+            prompt=prompt,
+            max_tokens=700
+        )
+        st.subheader("Recommended Project Ideas:")
+        st.write(response.generations[0].text)
+    except Exception as e:
+        st.error(f"🚨 Error generating project ideas: {str(e)}")
         
        
     st.markdown("---")
