@@ -3,4 +3,3 @@ streamlit
 PyMuPDF
 pdfplumber
 fitz
-re
