@@ -85,7 +85,7 @@ with col2:
         st.header("🛠 Generated Project Ideas")
         st.write("🔍 **Processing for project recommendations...**")
         
-        prompt = f"""You are an AI project advisor helping students build relevant and achievable projects.
+        prompt = f"""You are an AI project advisor helping students build relevant and achievable technology solutions/projects. for exapmle frontend app that connects to a api to create whether app, a text-to-speech, etc. and many other software projects that help students get internships and placements
             ### **Student Profile:**
             {resume_text}
             ### **Project Guidelines:**
