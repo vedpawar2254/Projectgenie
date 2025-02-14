@@ -1,10 +1,14 @@
 # ######## cohere ##########
 
+
+
 import streamlit as st
 import cohere
 import fitz  # PyMuPDF
 import pdfplumber
 import re
+
+
 
 # try:
 #     import fitz  
@@ -18,27 +22,11 @@ import re
 # except ImportError:
 #     pdfplumber_available = False
 
+
+
+
 st.set_page_config(layout="wide")  
 st.title("🚀 Project Genie & Resume Analyzer")
-
-
-
-def parse_resume(text):
-    """Extracts key details like name, education, skills, and experience from resume text."""
-    name = re.findall(r"Name:\s*(.*)", text)
-    education = re.findall(r"Education:\s*(.*)", text)
-    skills = re.findall(r"Skills:\s*(.*)", text)
-    experience = re.findall(r"Experience:\s*(.*)", text)
-    interests = re.findall(r"Interests:\s*(.*)", text)
-
-    return {
-        "name": name[0] if name else "N/A",
-        "education": education if education else ["N/A"],
-        "skills": skills[0].split(", ") if skills else ["N/A"],
-        "experience": experience if experience else ["N/A"],
-        "interests": interests[0].split(", ") if interests else ["N/A"]
-    }
-    
 
 def initialize_cohere():
     api_keys = [st.secrets["api_keys"].get("API_KEY_1"), st.secrets["api_keys"].get("API_KEY_2"), st.secrets["api_keys"].get("API_KEY_3")]
@@ -79,13 +67,10 @@ with col1:
      
         # resume_text = extract_text_pymupdf(uploaded_file) if method == "PyMuPDF" else extract_text_pdfplumber(uploaded_file)
         
+        resume_text = extract_text_pymupdf(uploaded_file) if method == "PyMuPDF" else extract_text_pdfplumber(uploaded_file)
+        
         st.subheader("Extracted Resume Text")
         st.text_area("", resume_text, height=300)
-
-        resume_text = extract_text_pymupdf(uploaded_file) if method == "PyMuPDF" else extract_text_pdfplumber(uploaded_file)
-        parsed_data = parse_resume(resume_text)  # Extract structured data
-
-
         
         st.subheader("Anything you want to learn while building these projects?")
         user_learning_input = st.text_input("")
@@ -96,47 +81,44 @@ with col1:
             st.session_state.button_clicked = True 
 
 with col2:
-    # Generate the AI prompt with parsed data
-    prompt = f"""You are an AI project advisor helping students build relevant and achievable projects.
-
-### **Student Profile:**
-- **Name**: {parsed_data['name']}
-- **Education**: {', '.join(parsed_data['education'])}
-- **Skills**: {', '.join(parsed_data['skills'])}
-- **Experience**: {', '.join(parsed_data['experience'])}
-- **Interests**: {', '.join(parsed_data['interests'])}
-
-### **Project Guidelines:**
-1. Use only the technologies mentioned in skills.
-2. Suggest 3 projects—one beginner, one intermediate, and one advanced.
-3. Projects should be achievable within 2-6 weeks.
-4. Align projects with career trends.
-5. Format output as follows:
-
-#### **Project {1/2/3}: [Project Title]**
-- **Level**: Beginner/Intermediate/Advanced  
-- **Description**: [Brief overview]  
-- **Step-by-step Roadmap**:  
-  - Step 1: …  
-  - Step 2: …  
-  - Step 3: …  
-- **Required Resources**: [Courses, GitHub repos, docs, or tutorials]  
-- **Expected Outcome**: [What the student will learn]  
-
-Only return structured project ideas. No extra explanations.
-"""
+    if "resume_text" in st.session_state and co is not None:
+        st.header("🛠 Generated Project Ideas")
+        st.write("🔍 **Processing for project recommendations...**")
         
-    
-    try:
-        response = co.generate(
-            model="command-r-08-2024",
-            prompt=prompt,
-            max_tokens=700
-        )
-        st.subheader("Recommended Project Ideas:")
-        st.write(response.generations[0].text)
-    except Exception as e:
-        st.error(f"🚨 Error generating project ideas: {str(e)}")
+        prompt = f"""You are an AI project advisor helping students build relevant and achievable projects.
+            ### **Student Profile:**
+            {resume_text}
+            ### **Project Guidelines:**
+            1. Use only the technologies mentioned in skills.
+            2. Suggest 3 projects—one beginner, one intermediate, and one advanced.
+            3. Projects should be achievable within 2-6 weeks.
+            4. Align projects with career trends.
+            5. Format output as follows:
+            #### **Project {1,2,3}: [Project Title]**
+            - **Level**: Beginner/Intermediate/Advanced  
+            - **Description**: [Brief overview]  
+            - **Step-by-step Roadmap**:  
+            - Step 1
+            - Step 2
+            .
+            .
+            .
+            - Step n
+            - **Required Resources**: [Courses, GitHub repos, docs, or tutorials]  
+            - **Expected Outcome**: [What the student will learn]  
+            Only return structured project ideas. No extra explanations.
+            """
+                    
+        try:
+            response = co.generate(
+                model="command-r-08-2024",
+                prompt=prompt,
+                max_tokens=700
+            )
+            st.subheader("Recommended Project Ideas:")
+            st.write(response.generations[0].text)
+        except Exception as e:
+            st.error(f"🚨 Error generating project ideas: {str(e)}")
         
        
     st.markdown("---")
