@@ -1,9 +1,211 @@
 # ######## cohere ##########
 
+
+
 import streamlit as st
 import cohere
 import fitz  # PyMuPDF
 import pdfplumber
+import re
+
+
+
+# try:
+#     import fitz  
+#     pymupdf_available = True
+# except ImportError:
+#     pymupdf_available = False
+    
+# try:
+#     import pdfplumber
+#     pdfplumber_available = True
+# except ImportError:
+#     pdfplumber_available = False
+
+
+full_stack = """
+100 Project Ideas for Full Stack Developers
+Welcome to this list of project ideas for full-stack developers. Whether you're a beginner looking for practice or an experienced developer seeking new challenges, these ideas cover various domains and technologies.
+
+Web Development Projects
+Personal Portfolio Website
+Blogging Platform
+E-commerce Website
+Social Media Platform
+Content Management System (CMS)
+Online Quiz Application
+Forum or Community Platform
+Real-time Chat Application
+Weather Forecast App
+News Aggregator
+Recipe Sharing Website
+Task Management App
+URL Shortener
+Online Code Editor
+Event Management System
+Crowdfunding Platform
+Booking and Reservation System
+Music Streaming Service
+Polling and Survey App
+E-learning Platform
+Mobile App Projects
+To-Do List App
+Expense Tracker
+Fitness and Workout App
+Recipe and Meal Planning App
+Language Learning App
+Music Player
+Note-Taking App
+News Reader
+Location-Based Reminder App
+Social Networking App
+Weather App
+QR Code Scanner
+Budgeting and Finance App
+Meditation and Mindfulness App
+Event Countdown App
+Habit Tracker
+Flashcard App
+Ride-Sharing App
+Document Scanner
+Navigation App
+Data Science and Analytics Projects
+Data Visualization Dashboard
+Stock Market Analysis Tool
+Sentiment Analysis of Social Media Data
+Predictive Analytics Tool
+Customer Churn Prediction
+Recommendation System
+Fraud Detection System
+Natural Language Processing (NLP) Tool
+Sales Forecasting App
+Data Annotation and Labeling Tool
+IoT and Hardware Projects
+Smart Home Automation System
+Weather Station with Sensors
+Home Security System
+Remote-controlled Robot
+Smart Mirror
+IoT-based Plant Watering System
+Fitness Tracker with IoT
+GPS Tracking Device
+Automated Pet Feeder
+Smart Light Control System
+Game Development Projects
+2D Platformer Game
+Puzzle Game
+Chess or Checkers Game
+Card Game (e.g., Solitaire)
+Multiplayer Online Game
+Racing Game
+Tower Defense Game
+Augmented Reality (AR) Game
+Educational Game for Kids
+Quiz or Trivia Game
+Machine Learning and AI Projects
+Image Recognition App
+Chatbot
+Predictive Text Generator
+Speech Recognition System
+Facial Recognition System
+Sentiment Analysis Chatbot
+Recommendation Engine
+Object Detection System
+Anomaly Detection Tool
+AI-powered Virtual Assistant
+Open Source and Community Projects
+Open-source Full-Stack Project Template
+Content Sharing Platform for Developers
+Volunteer Management System for Nonprofits
+Event Scheduling App for Local Communities
+Collaboration and Project Management Tool
+Code Review and Collaboration Platform
+Platform for Collecting and Sharing Educational Resources
+Charity and Donation Management System
+Library Management System for Local Libraries
+Open-source Healthcare Information System
+Finance and Fintech Projects
+Expense Tracking and Budgeting App
+Cryptocurrency Portfolio Tracker
+Stock Portfolio Management System
+Peer-to-Peer Payment App
+Loan and Mortgage Calculator
+Invoice and Billing System
+Investment Portfolio Analyzer
+Personal Finance Dashboard
+Automated Savings Planner
+Cryptocurrency Exchange Platform
+"""
+
+frontend = """01.Gradient loader animation
+02.Fliping cradit-card animation
+03.Custom dropdown list
+04.Login form in html and css
+05.QR code generator
+06.To-do list
+07.happy birthday animation
+08.realistic candle animation
+09.Quiz app
+10.Weather app
+11.Form validation in Javascript
+12.Tic-Tac-Toe Game
+13.Portfolio website
+14.Own code editor
+15.Text To Speech converter"""
+
+
+backend = """"Projects
+1.Company-Portfolio
+2.Blog-Website
+3.E-book Website
+4.E-commerce Website
+5.Resturant Website
+6.Hotel Website
+7.Photography Portfolio Website
+8.Fitness Website
+9.Password Generator
+10.QR code Generator
+11.Weather App
+12.Tic-Tac-Toe Game
+13.Link Shorten Website
+14.Drawing App
+15.Alarm Clock
+16.Meme Generator
+17.Chatting App
+18.Online From
+19.Text-Translator
+20.Playable Piano
+21.Image Resizer
+22.Dynamic Calender
+23.File Downloader
+24.Chess Game
+25.Car-Racing
+26.Connect-Game
+27.snake-Lander Game
+28.Word-Guessing Game
+29.Analog Watch
+30.Photo Editor
+31.Music Player
+32.Calculator
+33.Rock-Paper-Scissors Game
+34.Note App
+35.Text-File Saver
+36.Dictionay App
+37.Snake Game
+38.Stock Trading App
+39.Stop watch
+40.Text to Word Convertor
+41.Todo List App
+42.Twitter Clone
+43.Typing Speed Test App
+44.Admin Panel Dashboard
+45.Whatsapp Clone
+46.Video 2 Audio converter
+47.Random Qoute Generator
+48.Online Quiz Website
+49.Dragon Game
+50.Drag&Drop Image"""
+
 
 st.set_page_config(layout="wide")  
 st.title("🚀 Project Genie & Resume Analyzer")
@@ -45,6 +247,8 @@ with col1:
         method = st.radio("Choose Extraction Method", ["PyMuPDF", "pdfplumber"])
         
      
+        # resume_text = extract_text_pymupdf(uploaded_file) if method == "PyMuPDF" else extract_text_pdfplumber(uploaded_file)
+        
         resume_text = extract_text_pymupdf(uploaded_file) if method == "PyMuPDF" else extract_text_pdfplumber(uploaded_file)
         
         st.subheader("Extracted Resume Text")
@@ -63,8 +267,34 @@ with col2:
         st.header("🛠 Generated Project Ideas")
         st.write("🔍 **Processing for project recommendations...**")
         
-        prompt = f"Generate two unique project ideas based primarily on the user's learning goal: '{st.session_state.user_learning_input}'. If the learning goal is empty, consider the resume content: '{st.session_state.resume_text[:1000]}'. Each project should include:\n\n1️⃣ **Project Name & Brief Description**\n2️⃣ **Why this project?**\n3️⃣ **Step-by-Step Roadmap**\n4️⃣ **Relevant Official Documentation** (Only include links to official documentation, no other resources)"
-        
+        prompt = f"""You are an AI project advisor helping students build relevant and achievable technology solutions/projects. for exapmle frontend app if the student knows frontend,etc. and other software projects that help students get internships and placements
+        Use {frontend},{backend},{full_stack} as per need if the user's resume has the required skills for those projects
+            ### **Student Profile:**
+            Give more importance to students current technical skills
+            {resume_text}
+            ### **Project Guidelines:**
+            1. Use only the technologies mentioned in skills.
+            2. Suggest 3 projects—one beginner, one intermediate, and one advanced.
+            3. Projects should be achievable within 2-6 weeks.
+            4. Align projects with career trends.
+            5. Format output as follows:
+            #### **Project {1,2,3}: [Project Title]**
+            - **Level**: Beginner/Intermediate/Advanced  
+            - **Description**: [Brief overview]  
+            - **TechStack used**: [tech stack used and why]
+            - **Scope and Features**: [give features and the scope of project]
+            - **Step-by-step Roadmap**:  
+            - Step 1
+            - Step 2
+            .
+            .
+            .
+            - Step n
+            - **Required Resources**: [Courses, GitHub repos, docs, or tutorials]  
+            - **Expected Outcome**: [What the user will learn]  
+            Only return structured project ideas. No extra explanations.
+            """
+                    
         try:
             response = co.generate(
                 model="command-r-08-2024",
